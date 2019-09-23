@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<title>websocket2测试</title>
+	<style type="text/css">
+		h3,h4{
+			text-align:center;
+		}
+	</style>
+</head>
+<body>
+
+<h4>
+<hr/>
+<button onclick="closeWebSocket()">关闭WebSocket2连接</button>
+<hr/>
+<div id="message"></div>
+</h4>
+
+<script type="text/javascript">
+	var socket;
+	if (typeof (WebSocket) == "undefined") {
+		console.log("遗憾：您的浏览器不支持WebSocket");
+	} else {
+		console.log("恭喜：您的浏览器支持WebSocket");
+
+		//实现化WebSocket对象
+		//指定要连接的服务器地址与端口建立连接
+		//注意ws、wss使用不同的端口。我使用自签名的证书测试，
+		//无法使用wss，浏览器打开WebSocket时报错
+		//ws对应http、wss对应https。
+		socket = new WebSocket("ws://127.0.0.1:8084/websocket/1002");
+		//连接打开事件
+		socket.onopen = function() {
+			setMessageInnerHTML("Socket2 已打开");
+		};
+		//收到消息事件
+		socket.onmessage = function(msg) {
+			setMessageInnerHTML(msg.data);
+		};
+		//连接关闭事件
+		socket.onclose = function() {
+			setMessageInnerHTML("Socket2已关闭");
+		};
+		//发生了错误事件
+		socket.onerror = function() {
+			setMessageInnerHTML("Socket2发生了错误");
+		}
+
+		//窗口关闭时，关闭连接
+		window.unload=function() {
+			socket.close();
+		};
+	}
+
+	//关闭WebSocket连接
+	function closeWebSocket() {
+		socket.close();
+	}
+
+	//发送消息
+	function send() {
+		var msg = document.getElementById("text").value;
+		socket.send("/webtest/api/ws/sendOne?id=1001");
+	}
+
+	//将消息显示在网页上
+	function setMessageInnerHTML(innerHTML) {
+		document.getElementById("message").innerHTML += innerHTML + "<br/>";
+	}
+</script>
+
+</body>
+</html>
